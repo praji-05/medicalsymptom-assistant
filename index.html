@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f8fc">
+    <title>MediAssist AI | Medical Symptom Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="/" class="brand">
+        <div class="brand-icon">✚</div>
+        <div>
+            <h1>MediAssist <span>AI</span></h1>
+            <p>HEALTH INFORMATION ASSISTANT</p>
+        </div>
+    </a>
+
+    <div class="status">
+        <span class="status-dot"></span>
+        Local AI Assistant
+    </div>
+</header>
+
+<main class="dashboard">
+
+    <section class="welcome">
+        <div>
+            <p class="eyebrow">YOUR PERSONAL HEALTH COMPANION</p>
+            <h2>Understand your symptoms.<br><span>Make informed decisions.</span></h2>
+            <p class="welcome-text">
+                Describe how you feel and receive general health information
+                to help you understand possible explanations for your symptoms.
+            </p>
+        </div>
+
+        <div class="hero-icon" aria-hidden="true">✚</div>
+    </section>
+
+    <div class="notice" role="note">
+        <span class="notice-icon">ⓘ</span>
+        <p>
+            <strong>Important:</strong> This tool provides general health
+            information, not a diagnosis. It cannot replace professional
+            medical advice. For severe or rapidly worsening symptoms,
+            seek medical help immediately.
+        </p>
+    </div>
+
+    <div class="content-grid">
+
+        <section class="panel form-panel">
+            <div class="panel-heading">
+                <div class="heading-icon">♧</div>
+                <div>
+                    <h3>Patient Information</h3>
+                    <p>Tell us a little about yourself and your symptoms.</p>
+                </div>
+            </div>
+
+            <form id="symptomForm">
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="age">Age <span class="required">*</span></label>
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            min="0"
+                            max="120"
+                            placeholder="Enter age"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="sex">Sex (optional)</label>
+                        <select id="sex" name="sex">
+                            <option value="">Prefer not to say</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="symptoms">
+                        Describe your symptoms <span class="required">*</span>
+                    </label>
+                    <textarea
+                        id="symptoms"
+                        name="symptoms"
+                        rows="5"
+                        maxlength="3000"
+                        placeholder="Example: I have had a mild fever, sore throat and cough since yesterday..."
+                        required
+                    ></textarea>
+                    <div class="field-hint">
+                        Describe what you feel, when it started, and any changes.
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="duration">Duration <span class="required">*</span></label>
+                        <select id="duration" name="duration" required>
+                            <option value="">Select duration</option>
+                            <option value="Less than 24 hours">Less than 24 hours</option>
+                            <option value="1–3 days">1–3 days</option>
+                            <option value="4–7 days">4–7 days</option>
+                            <option value="More than a week">More than a week</option>
+                            <option value="Recurring symptoms">Recurring symptoms</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="severity">Severity <span class="required">*</span></label>
+                        <select id="severity" name="severity" required>
+                            <option value="">Select severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="history">Previous medical conditions</label>
+                    <textarea
+                        id="history"
+                        name="history"
+                        rows="2"
+                        maxlength="1000"
+                        placeholder="Optional: Any relevant medical history"
+                    ></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="medications">Current medications</label>
+                    <input
+                        type="text"
+                        id="medications"
+                        name="medications"
+                        maxlength="1000"
+                        placeholder="Optional"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="allergies">Known allergies</label>
+                    <input
+                        type="text"
+                        id="allergies"
+                        name="allergies"
+                        maxlength="1000"
+                        placeholder="Optional"
+                    >
+                </div>
+
+                <button type="submit" id="analyzeBtn" class="primary-btn">
+                    <span>✦</span>
+                    Analyze My Symptoms
+                    <span class="button-arrow">→</span>
+                </button>
+
+                <p class="privacy-note">
+                    Your information is sent to the locally running Ollama
+                    model for analysis. This demo does not save patient
+                    records to a database.
+                </p>
+
+            </form>
+        </section>
+
+        <section class="panel results-panel" id="resultsPanel">
+            <div class="panel-heading">
+                <div class="heading-icon result-icon">✧</div>
+                <div>
+                    <h3>AI Health Insights</h3>
+                    <p>Your informational symptom analysis appears here.</p>
+                </div>
+            </div>
+
+            <div id="emergencyAlert" class="emergency-alert" role="alert" hidden></div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-illustration">✚</div>
+                <h3>Your health insights start here</h3>
+                <p>
+                    Complete your patient information and submit your symptoms
+                    to receive general health information.
+                </p>
+
+                <div class="result-feature">
+                    <span>01</span>
+                    <div>
+                        <strong>Possible explanations</strong>
+                        <p>Understand what may be associated with your symptoms.</p>
+                    </div>
+                </div>
+
+                <div class="result-feature">
+                    <span>02</span>
+                    <div>
+                        <strong>Follow-up questions</strong>
+                        <p>Identify additional information that may be useful.</p>
+                    </div>
+                </div>
+
+                <div class="result-feature">
+                    <span>03</span>
+                    <div>
+                        <strong>General guidance</strong>
+                        <p>Learn when professional medical evaluation may be needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingState" class="loading-state" hidden>
+                <div class="loader"></div>
+                <h3>Analyzing your information</h3>
+                <p>Llama 3.2 is preparing your health information report...</p>
+                <p class="loading-note">This may take a little time.</p>
+            </div>
+
+            <div id="errorMessage" class="error-message" role="alert" hidden></div>
+
+            <div id="resultContent" hidden>
+                <div class="result-meta">
+                    <span class="result-badge">✦ AI-GENERATED INFORMATION</span>
+                </div>
+
+                <div id="analysisText" class="analysis-text"></div>
+
+                <div class="disclaimer-card">
+                    <strong>Medical disclaimer</strong>
+                    <p id="disclaimerText">
+                        This information is not a medical diagnosis.
+                        Consult a qualified healthcare professional for
+                        personal medical advice.
+                    </p>
+                </div>
+
+                <button type="button" id="downloadBtn" class="secondary-btn">
+                    ↓ Download Report
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>MediAssist AI · Educational demonstration using a local language model</p>
+        <p>AI-generated information may be inaccurate. Always prioritize professional medical care.</p>
+    </footer>
+
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
